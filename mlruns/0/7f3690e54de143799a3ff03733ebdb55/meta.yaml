@@ -1,0 +1,14 @@
+artifact_uri: file:///d:/Machine%20learning/ML%20Classwork%201/mlruns/0/7f3690e54de143799a3ff03733ebdb55/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 7f3690e54de143799a3ff03733ebdb55
+run_name: method-batch-lr-0.1-reg-Ridge-poly-True
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757529989052
+status: 1
+tags: []
+user_id: aashu

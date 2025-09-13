@@ -1,164 +1,88 @@
-from dash import Dash, html, dcc, Input, Output, State, dash_table #importing the necessary libraries
+# importing dash library, pandas for dataframe, pickle to use trained model or save model, numpy for array or matrix operations
+from dash import Dash, callback_context, html, dcc, Input, Output, State, dash_table
 import pandas as pd
-import pickle
+import joblib
 import numpy as np
+from pages.mod import *
 
-app = Dash() #initilising the app
+app = Dash(__name__, suppress_callback_exceptions=True)
 
-df = pd.read_csv("Cars.csv") # importing the dataset
+# app = Dash()    #initialization of app using Dash
+scaler = joblib.load("model/scaler_X.joblib")
+scaler_y = joblib.load("model/scaler_y.joblib")
+df = pd.read_csv("Cars.csv")    # reading csv file using pandas
 
-filename = 'car_prediction.model' # importing the car_prediction model from the car prediction
-loaded_model = pickle.load(open(filename, 'rb')) #loading the model
-
-app.layout = html.Div(children=[ # initializing the app layout 
+app.layout = html.Div([
+    dcc.Location(id='url', refresh=False),
     html.Div([
-    html.H1(children='Car Price Prediction'), # Header
-    ],style={"display":"flex","justify-content":"center"}),
-    html.Div([
-        html.Button("Car prices", id="carprices",  # Car price Button 
-                    style={"background-color": "green", "color": "white", "padding": "10px",
-                        "border-radius": "10px", "margin-right": '10px', "cursor": "pointer","height": "40px"}),
+        dcc.Link(html.Button("V1"),id='v1-nav' ,href="/v1"),
+        dcc.Link(html.Button("V2"),id='v2-nav', href="/v2")
+    ]),
+    html.Div(id='page-content')
+])
 
-        html.Button("Instructions", id="instruction", # Instructions button
-                    style={"background-color": "green", "color": "white", "padding": "8px",
-                        "border-radius": "10px", "cursor": "pointer","height": "42px"}),
-    ],style={"display": "flex","justify-content":"space-around","margin-top": "12px"}),
+style_active = {
+    'background-color': 'green',
+    'color': 'white',
+    'padding': '10px',
+    'width': '6rem',
+    'border-radius': '10px',
+    'font-size': '16px'
+}
 
-    html.Div(id="table-container"),
-    dcc.Store(id="table-visible", data=False),  
+style_inactive = {
+    'padding': '10px',
+    'width': '6rem',
+    'border-radius': '10px',
+    'font-size': '16px'
+}
+
+# Callback
+@app.callback(
+    Output('v1', 'style'),
+    Output('v2', 'style'),
+    Input('v1', 'n_clicks'),
+    Input('v2', 'n_clicks')
+)
+def change_button_color(n1, n2):
+    ctx = callback_context
+    if not ctx.triggered:
+        clicked_id = None
+    else:
+        clicked_id = ctx.triggered[0]['prop_id'].split('.')[0]
+
+    if clicked_id == 'v1' or clicked_id is None:  # default V1 active
+        return style_active, style_inactive
+    elif clicked_id == 'v2':
+        return style_inactive, style_active
+
     
-    html.Div(id="instruction-container"),
-    dcc.Store(id="instruction-visible", data=False),  
-    
-    html.Div([
-    html.Div([
-    html.Div([
-    html.Label("Car Brand Name:"), # car brand names. it was turned into numerical value now tuenred back for the user
-    dcc.Dropdown(
-        id="brand-input",
-        options=[
-            {"label": "Ambassador", "value": 0},
-            {"label": "Ashok", "value": 1},
-            {"label": "Audi", "value": 2},
-            {"label": "BMW", "value": 3},
-            {"label": "Chevrolet", "value": 4},
-            {"label": "Daewoo", "value": 5},
-            {"label": "Datsun", "value": 6},
-            {"label": "Fiat", "value": 7},
-            {"label": "Force", "value": 8},
-            {"label": "Ford", "value": 9},
-            {"label": "Honda", "value": 10},
-            {"label": "Hyundai", "value": 11},
-            {"label": "Isuzu", "value": 12},
-            {"label": "Jaguar", "value": 13},
-            {"label": "Jeep", "value": 14},
-            {"label": "Kia", "value": 15},
-            {"label": "Land", "value": 16},
-            {"label": "Lexus", "value": 17},
-            {"label": "MG", "value": 18},
-            {"label": "Mahindra", "value": 19},
-            {"label": "Maruti", "value": 20},
-            {"label": "Mercedes-Benz", "value": 21},
-            {"label": "Mitsubishi", "value": 22},
-            {"label": "Nissan", "value": 23},
-            {"label": "Opel", "value": 24},
-            {"label": "Peugeot", "value": 25},
-            {"label": "Renault", "value": 26},
-            {"label": "Skoda", "value": 27},
-            {"label": "Tata", "value": 28},
-            {"label": "Toyota", "value": 29},
-            {"label": "Volkswagen", "value": 30},
-            {"label": "Volvo", "value": 31}
-        ],
-        placeholder="Select Brand",
-        style={"margin-bottom": "10px","width": "22rem"}
-        ),
-    ]),
-    
-    html.Div([ #kilometers driven 
-        html.Label("Kms Driven:"),
-        dcc.Input(id="km", type="number", placeholder="Enter Km driven by Car",
-                  style={"margin-bottom": "10px", "display": "block","width": "22rem","padding": "6px"}),
-    ]),
 
-    html.Div([# fuel type
-        html.Label("Fuel Type:"), 
-        dcc.Dropdown(
-            id="fuel-input",
-            options=[
-            {"label": "Diesel", "value": 0}, 
-            {"label": "Petrol", "value": 1}
-            ],
-            placeholder="Select fuel",
-            style={"margin-bottom": "10px","width": "22rem"}
-        ),
-    ]),
-
-    html.Div([ # seller type
-        html.Label("Seller Type:"),
-        dcc.Dropdown(
-            id="seller-type-input",   #select seller type with the dropdown
-            options=[
-            {"label": "Dealer", "value": 0}, # dealer = 0 initial string data to numerical data equivalence
-            {"label": "Individual", "value": 1},# individual = 1
-            {"label": "Trustmark Dealer", "value": 2} # trustmark dealer = 2 
-            ],
-            placeholder="Select Seller Type",
-            style={"margin-bottom": "10px","width": "22rem"}
-        ),
-    ]),
-
-    html.Label("Mileage (kmpl):"), # mileage 
-    dcc.Input(id="mileage", type="number", placeholder="Enter mileage",
-                style={"margin-bottom": "10px", "display": "block","width": "22rem","padding": "6px"}),
-
-    html.Label("Engine (CC):"), # engine
-    dcc.Input(id="engine", type="number", placeholder="Enter engine capacity",
-                style={"margin-bottom": "10px", "display": "block","width": "22rem","padding": "6px"}),
-
-    html.Label("Seats:"), # seats
-    dcc.Input(id="seats", type="number", placeholder="Enter number of seats",
-                style={"margin-bottom": "10px", "display": "block","width": "22rem","padding": "6px"}),
-
-    html.Label("Max Power (bhp):"), #max power
-    dcc.Input(id="max_power", type="number", placeholder="Enter max power",
-                style={"margin-bottom": "10px", "display": "block","width": "22rem","padding": "6px"}),
-    ],style={"margin-left": "0.2rem"}),
-    ],style={"display": "flex","justify-content": "center"}),
-
-    html.Div([
-    html.Button("Predict", id="prediction", #prediction 
-                style={"background-color": "green", "color": "white", "padding": "10px", # styling 
-                       "border-radius": "10px", "cursor": "pointer"}), 
-    ],style={"display":"flex","justify-content":"center"}),
-    html.Div(id="prediction-container"),
-    dcc.Store(id="prediction-visible", data=False)
-], style={"padding": "1rem"})
-
-
-@app.callback( #calling back the id
+@app.callback(  # calling back id to change state provider and toggle button clicked 
     Output("table-container", "children"),
     Output("table-visible", "data"),
-    Input("carprices", "n_clicks"),
+    Input("dataFrame", "n_clicks"),
     State("table-visible", "data"),  
     prevent_initial_call=True
 )
 
-def show_carprices(n_clicks, visible): #Display the car prices
+def show_dataframe(n_clicks, visible):  # function to show dataFrame on click
     if not visible:
         return dash_table.DataTable(
             columns=[{"name": "Brand", "id": "name"},
+                     {"name": "Fuel", "id": "fuel"},
                      {"name": "Max Power", "id": "max_power"},
                      {"name": "Kms Driven", "id": "km_driven"},
                      {"name": "Engine", "id": "engine"},
                      {"name": "Mileage", "id": "mileage"},
+                     {"name": "Seats", "id": "seats"},
                      {"name": "Selling Price", "id": "selling_price"}],
-            data=df[["name","max_power","km_driven","engine","mileage", "selling_price"]].to_dict('records'),
+            data=df[["name","fuel","max_power","km_driven","engine","mileage","seats", "selling_price"]].to_dict('records'),
             page_size=10,
             style_table={"width": "98%"}
         ), True
     else:
-        return "", False
+        return "", False    # checking click and not clicked through boolean
 
 
 @app.callback(
@@ -168,12 +92,16 @@ def show_carprices(n_clicks, visible): #Display the car prices
     State("instruction-visible", "data"),
     prevent_initial_call=True
 )
-def instructiontoggle(n_clicks, visible):  # instructions for running the app. 
+def toggleInstruction(n_clicks, visible):  
     if not visible:
-        return html.Div("You can check the car prices by clicking the Car Price's button. " \
-        "To predict the price of your car, enter brand name, km driven, fuel type, seller type, milage, engine, number of seats and max power" \
-        "Click predict.",
-                        style={"margin-left": "10px","margin-right":"10px", "padding-left":"10px","padding-right":"10px"}), True
+        return html.Div(["This is a Car Price Prediction Software to Predict as per your NEED and WANT. " ,
+            html.Br(),
+            "DataFrame button shows the car data prices.",
+            html.Br(),
+            "Whereas Form below is required to be filled to get result of Price Prediction.",
+            html.Br(),
+            "Just hit PREDICT and Predicted Price will appear."],
+                        style={"border": "2px solid red", "border-radius": "20px","margin-left": "10px","margin-right":"10px", "padding-left":"10px","padding-right":"10px","padding":"6px"}), True
     else:
         return "", False
 
@@ -190,16 +118,124 @@ def instructiontoggle(n_clicks, visible):  # instructions for running the app.
     State("seats", "value"),
     State("max_power", "value"),
     State("prediction-visible", "data"),
+    State("url", "pathname"),
     prevent_initial_call=True
 )
-def prediction(n_clicks, brand, km, fuel, seller, mileage, engine, seats, max_power, visible): # for car price prediction
-    if not visible:
-        sample = np.array([[brand, km, fuel, seller, mileage, engine, seats, max_power]]) # give value to predict
 
-        predicted_price = loaded_model.predict(sample)[0]
-        return f"Predicted Car Price: {predicted_price:,.0f}", True
+def prediction_fun(n_clicks, brand, km, fuel, seller, mileage, engine, seats, max_power, visible, pathname):  # prediction function for predicting price
+    if not visible:
+        # if not visible:
+        #     return f"Current pathname: {pathname}", True
+        # else:
+        #     return "", False
+        if pathname == "/v1":
+            sample = np.array([[brand, km, fuel, seller, mileage, engine, seats, max_power]])
+            model = joblib.load('model/carPricePrediction.model')
+            predicted_price = model.predict(sample)[0]
+            # if not visible:
+            #     return f"{sample}", True
+            # else:
+            #     return "", False
+
+        elif pathname == "/v2":
+            sample = np.array([[brand, km, fuel, seller, mileage, engine, seats, max_power]])
+            model = joblib.load("model/carPricePredictionA2Final.joblib")
+
+            # Scale features
+            sample_scaled = scaler.transform(sample)
+
+            # Add bias term manually
+            sample_scaled_with_bias = np.hstack([np.ones((sample_scaled.shape[0], 1)), sample_scaled])
+
+            # Predict
+            y_pred_scaled = model.predict(sample_scaled_with_bias)
+
+            # Inverse transform and ensure it's positive
+            predicted_price = np.abs(scaler_y.inverse_transform(y_pred_scaled.reshape(-1, 1)).flatten())
+
+        # elif pathname == "/v2":
+        #     # sample = np.array([[brand, km, fuel, seller, mileage, engine, seats, max_power]])            
+        #     # model = pickle.load(open("model/carPricePredictionA2.model", "rb"))
+        #     # sample_scaled = scaler.transform(sample)
+        #     # # sample_scaled_with_bias = np.hstack([np.ones((sample_scaled.shape[0], 1)), sample_scaled])
+        #     # # y_pred_scaled = model.predict(sample_scaled_with_bias)
+        #     # predicted_price = scaler_y.inverse_transform(y_pred_scaled.reshape(-1, 1)).flatten()
+        #     sample = np.array([[brand, km, fuel, seller, mileage, engine, seats, max_power]])
+        #     model = joblib.load("model/carPricePredictionA2Final.joblib")
+
+        #     # # Scale features
+        #     # sample_scaled = scaler.transform(sample)
+
+        #     # # Add bias term manually
+        #     # sample_scaled_with_bias = np.hstack([np.ones((sample_scaled.shape[0], 1)), sample_scaled])
+
+        #     # # Predict
+        #     # y_pred_scaled = model.predict(sample_scaled_with_bias)
+
+        #     # # Inverse transform to get actual price
+        #     # predicted_price = scaler_y.inverse_transform(y_pred_scaled.reshape(-1, 1)).flatten()
+
+        #     # Scale if your model was trained on scaled data
+        #     sample_scaled = scaler.transform(sample)
+
+        #     # Add bias term if your model expects it
+        #     sample_scaled_with_bias = np.hstack([np.ones((sample_scaled.shape[0], 1)), sample_scaled])
+
+        #     # Predict
+        #     y_pred_scaled = model.predict(sample_scaled_with_bias)
+
+        #     # Inverse transform if your target was scaled
+        #     predicted_price = np.abs(scaler_y.inverse_transform(y_pred_scaled.reshape(-1, 1)).flatten())
+
+            # print(model.__dict__)
+            # if not visible:
+            #     return f"{sample} {sample_scaled} {sample_scaled_with_bias}", True
+            # else:
+            #     return "", False
+        else:
+            return "Invalid route - no model found", True
+        
+        # if model.theta is None:
+        #     return "Model not trained yet", True
+        
+        return f"Predicted Car Price: {predicted_price}", True
     else:
         return "", False
+    
+#routing
 
-if __name__ == '__main__': # main app running on the port
+# Navigation callback
+from dash.dependencies import Input, Output
+
+@app.callback(
+    Output('url', 'pathname'),
+    Input('v1', 'n_clicks'),
+    Input('v2', 'n_clicks'),
+)
+def navigate(v1_clicks, v2_clicks):
+    v1_clicks = v1_clicks or 0
+    v2_clicks = v2_clicks or 0
+    if v1_clicks > v2_clicks:
+        return '/v1'
+    elif v2_clicks > v1_clicks:
+        return '/v2'
+    return '/v1'  # default
+
+# Page routing
+@app.callback(
+    Output('page-content', 'children'),
+    Input('url', 'pathname')
+)
+def display_page(pathname):
+    if pathname == '/v1':
+        from pages import v1_page
+        return v1_page.layout
+    elif pathname == '/v2':
+        from pages import v2_page
+        return v2_page.layout
+    else:
+        return html.H3("Welcome To Machine Learning Project")
+    
+
+if __name__ == '__main__':      # main app running file for running server default runs on localhost= 127.0.0.1 port 8050 .i.e. http://127.0.0.1:8050/
     app.run(debug=True, host="0.0.0.0")

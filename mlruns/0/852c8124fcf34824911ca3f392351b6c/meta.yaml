@@ -1,0 +1,14 @@
+artifact_uri: file:///d:/Machine%20learning/ML%20Classwork%201/mlruns/0/852c8124fcf34824911ca3f392351b6c/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 852c8124fcf34824911ca3f392351b6c
+run_name: method-mini-lr-0.1-reg-Normal-poly-False
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757530240873
+status: 1
+tags: []
+user_id: aashu

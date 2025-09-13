@@ -1,0 +1,14 @@
+artifact_uri: file:///d:/Machine%20learning/ML%20Classwork%201/mlruns/0/251aa1841ee248f0a597d9f60545b572/artifacts
+end_time: 1757530172689
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 251aa1841ee248f0a597d9f60545b572
+run_name: method-batch-lr-0.1-reg-ElasticNet-poly-False
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757530146354
+status: 3
+tags: []
+user_id: aashu

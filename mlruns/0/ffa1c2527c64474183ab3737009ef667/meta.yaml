@@ -1,0 +1,14 @@
+artifact_uri: file:///d:/Machine%20learning/ML%20Classwork%201/mlruns/0/ffa1c2527c64474183ab3737009ef667/artifacts
+end_time: 1757529951546
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: ffa1c2527c64474183ab3737009ef667
+run_name: method-batch-lr-0.1-reg-Lasso
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757529912089
+status: 3
+tags: []
+user_id: aashu

@@ -1,0 +1,14 @@
+artifact_uri: file:///d:/Machine%20learning/ML%20Classwork%201/mlruns/0/514df02f9a564267a6a85d38e2d40626/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 514df02f9a564267a6a85d38e2d40626
+run_name: method-batch-lr-0.1-reg-Lasso-poly-True
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757530042651
+status: 1
+tags: []
+user_id: aashu

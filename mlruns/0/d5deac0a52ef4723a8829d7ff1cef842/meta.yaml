@@ -1,0 +1,14 @@
+artifact_uri: file:///d:/Machine%20learning/ML%20Classwork%201/mlruns/0/d5deac0a52ef4723a8829d7ff1cef842/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: d5deac0a52ef4723a8829d7ff1cef842
+run_name: method-batch-lr-0.1-reg-Ridge
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757529549301
+status: 1
+tags: []
+user_id: aashu

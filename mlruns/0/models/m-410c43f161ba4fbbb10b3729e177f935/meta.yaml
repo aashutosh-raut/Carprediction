@@ -1,0 +1,10 @@
+artifact_location: file:///d:/Machine%20learning/ML%20Classwork%201/mlruns/0/models/m-410c43f161ba4fbbb10b3729e177f935/artifacts
+creation_timestamp: 1757530099552
+experiment_id: '0'
+last_updated_timestamp: 1757530107463
+model_id: m-410c43f161ba4fbbb10b3729e177f935
+model_type: null
+name: model
+source_run_id: 00fa057a88ed4e218f8984c480084794
+status: 2
+status_message: null

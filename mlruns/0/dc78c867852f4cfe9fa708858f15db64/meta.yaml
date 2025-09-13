@@ -1,0 +1,14 @@
+artifact_uri: file:///d:/Machine%20learning/ML%20Classwork%201/mlruns/0/dc78c867852f4cfe9fa708858f15db64/artifacts
+end_time: 1757530003699
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: dc78c867852f4cfe9fa708858f15db64
+run_name: Fold-1
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757529996628
+status: 3
+tags: []
+user_id: aashu
